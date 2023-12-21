@@ -1,3 +1,21 @@
+export type Delivery = {
+  destination: string;
+  dispatcher: string;
+  startTime?: number;
+  trackingId?: string;
+  arrivalTime?: number;
+  dispatchCurrentLocation?: string;
+  isStarted: false;
+  distance?: number;
+  duration?: number;
+  itemsToDeliver?: {
+    itemName: string;
+    itemPrice?: number;
+    isPaid?: boolean;
+    amountDue?: number;
+  };
+};
+
 export type Coordinate = {
   longitude: number;
   latitude: number;

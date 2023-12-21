@@ -1,19 +1,9 @@
 "use client";
+import { Delivery } from "@/lib/utils";
 import { trpcClient } from "@/trpc/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-type Delivery = {
-  destination: string;
-  dispatcher: string;
-  itemsToDeliver?: {
-    itemName: string;
-    itemPrice?: number;
-    isPaid?: boolean;
-    amountDue?: number;
-  };
-};
 
 const API_KEY = "AIzaSyAlaaYarlEwGAEC5hPKq4PdEN9w1KRgLRk";
 

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { publicProcedure, router } from "./trpc";
 import { MongoClient, ObjectId } from "mongodb";
 import { randomUUID } from "crypto";
-import { getDistance } from "@/lib/utils";
+import { Delivery, getDistance } from "@/lib/utils";
 
 export const appRouter = router({
   createDelivery: publicProcedure
@@ -97,6 +97,8 @@ export const appRouter = router({
       .collection("delivery")
       .findOne({ trackingId: input }, { projection: { _id: 0 } });
     await client.close();
+
+    // const response = data as Delivery;
     return data;
   }),
 });

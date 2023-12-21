@@ -22,8 +22,8 @@ export default function Track({ params: { tracker } }: Props) {
     hour12: true,
   }).format(data?.arrivalTime);
 
-  const duration = data?.duration / 3600000;
-  const remainderTime = data?.arrivalTime - Date.now();
+  const duration = data?.duration ?? 120 / 3600000;
+  const remainderTime = data?.arrivalTime ?? 1 - Date.now();
 
   const remainderHr =
     remainderTime > 3600000 ? Math.round(remainderTime % 12) : 0;
