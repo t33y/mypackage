@@ -98,19 +98,6 @@ export default function Delivery({ params: { id } }: Props) {
           destinationLon={data.destinationLon}
         />
       )}
-      {/* <input
-        className="text-black my-2"
-        ref={setDispatcherCodeRef}
-        placeholder="set dispatcher code"
-        type="text"
-      />
-      <button
-        className="border p-2 flex justify-center my-2 rounded-md"
-        onClick={setDispatcherCode}
-      >
-        {" "}
-        Send Delivery to Dispatcher
-      </button> */}
       <input
         className="text-black my-2"
         ref={setDispatcherCodeRef}
@@ -122,8 +109,21 @@ export default function Delivery({ params: { id } }: Props) {
         onClick={setDispatcherCode}
       >
         {" "}
-        Set Dispatcher Code
+        Send Delivery to Dispatcher
       </button>
+      {/* <input
+        className="text-black my-2"
+        ref={setDispatcherCodeRef}
+        placeholder="set dispatcher code"
+        type="text"
+      />
+      <button
+        className="border p-2 flex justify-center my-2 rounded-md"
+        onClick={setDispatcherCode}
+      >
+        {" "}
+        Set Dispatcher Code
+      </button> */}
 
       <button
         disabled={!isCodeSet}
