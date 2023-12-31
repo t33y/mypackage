@@ -255,8 +255,9 @@ export default function Home() {
       // classList: "text-blue"  ,
       className:
         "after:absolute after:whitespace-nowrap after:bg-gray-500/70 after:text-white after:content-['Pick_up_location'] after:px-[4px] after:py-1 after:rounded-[3px] after:-left-[100%]  ",
+
       // element: dispatchMarkerRef.current,
-    })
+    } as mapboxgl.MarkerOptions)
       .setLngLat([lon, lat])
       .addTo(map);
 
@@ -265,7 +266,7 @@ export default function Home() {
       new mapboxgl.Marker({
         className:
           "after:absolute after:whitespace-nowrap after:bg-gray-500/70 after:text-white after:content-['Destination'] after:px-[4px] after:py-1 after:rounded-[3px] after:-left-[100%]  ",
-      })
+      } as mapboxgl.MarkerOptions)
         .setLngLat([destinationLon, destinationLat])
         .addTo(map);
       // if (originLatLon) {
