@@ -351,6 +351,47 @@ export default function Home() {
             Update
           </button>
         </div>
+
+        <div className="gap-2 flex">
+          <label htmlFor="dispatcherName">Dispatcher Name </label>
+          <input
+            className="text-black"
+            required
+            // onChange={(e) => {
+            //   setOriginAddress(e.target.value);
+            // }}
+            id="dispatcherName"
+            type="text"
+            // value={originAddress}
+          />
+        </div>
+        <div className="gap-2 flex">
+          <label htmlFor="dispatcherNumber">Dispatcher Mobile Number </label>
+          <input
+            className="text-black"
+            required
+            // onChange={(e) => {
+            //   setOriginAddress(e.target.value);
+            // }}
+            id="dispatcherNumber"
+            type="tel"
+            // value={originAddress}
+          />
+        </div>
+        <div className="gap-2 flex">
+          <label htmlFor="dispatcherEmail">Dispatcher Email </label>
+          <input
+            className="text-black"
+            // onChange={(e) => {
+            //   setOriginAddress(e.target.value);
+            // }}
+            id="dispatcherEmail"
+            type="email"
+            // value={originAddress}
+          />
+          <span>Optional</span>
+        </div>
+
         <button
           disabled={isLoading}
           type="submit"
