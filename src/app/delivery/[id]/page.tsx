@@ -1,6 +1,8 @@
 "use client";
+import MapComponent from "@/components/MapComponent";
 import { trpcClient } from "@/trpc/client";
-import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 type Props = {
@@ -14,17 +16,47 @@ type Item = {
   price: string | undefined;
   quantity: string | undefined;
 };
+type DeliveryStartData = {
+  id: string;
+  dispatcherCode: string;
+};
 
 const API_KEY = "AIzaSyAlaaYarlEwGAEC5hPKq4PdEN9w1KRgLRk";
 
 export default function Delivery({ params: { id } }: Props) {
+  // const session = useSession();
+  // if (!session.data?.user) {
+  //   redirect("/signup");
+  // }
   const [items, setItem] = useState<Array<Item>>([]);
+  const [isCodeSet, setIsCodeSet] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [deliveryStartData, setDeliveryStartData] = useState<DeliveryStartData>(
+    { id, dispatcherCode: "" }
+  );
   const itemNameRef = useRef<HTMLInputElement>(null);
   const itemPriceRef = useRef<HTMLInputElement>(null);
   const itemQuantityRef = useRef<HTMLInputElement>(null);
+  const setDispatcherCodeRef = useRef<HTMLInputElement>(null);
+
   const router = useRouter();
   const { data } = trpcClient.getDelivery.useQuery({ id });
   const { mutate } = trpcClient.startDelivery.useMutation();
+
+  const setDispatcherCode = () => {
+    if (!setDispatcherCodeRef.current?.value) {
+      return alert("Please set a dispatcher code");
+    }
+
+    let ref = setDispatcherCodeRef.current.value;
+
+    setDeliveryStartData((prev) => {
+      return { ...prev, dispatcherCode: ref };
+    });
+
+    setDispatcherCodeRef.current.value = "";
+    setIsCodeSet(true);
+  };
   const addItem = () => {
     const name = itemNameRef.current?.value;
     const price = itemPriceRef.current?.value;
@@ -32,16 +64,22 @@ export default function Delivery({ params: { id } }: Props) {
     setItem([...items, { name, price, quantity }]);
   };
   const startDelivery = () => {
-    mutate(
-      { id },
-      {
-        onSuccess: (e) => {
-          console.log("Delivery started", e);
-          // return redirect(`/delivery/${e.insertedId}`);
-          router.push(`http://localhost:3000/track/${e}`);
-        },
-      }
-    );
+    if (!deliveryStartData.dispatcherCode) {
+      alert("set dispatcher code");
+      console.log(
+        "delievery start data dispatch code",
+        deliveryStartData.dispatcherCode
+      );
+      return;
+    }
+    setIsLoading(true);
+    mutate(deliveryStartData, {
+      onSuccess: (e) => {
+        console.log("Delivery started", e);
+        // return redirect(`/delivery/${e.insertedId}`);
+        router.push(`http://localhost:3000/track/${e}`);
+      },
+    });
   };
 
   return (
@@ -50,20 +88,53 @@ export default function Delivery({ params: { id } }: Props) {
         <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none"></div>
       </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]"></div>
-      <iframe
-        width="600"
-        height="450"
-        style={{ border: 0 }}
-        loading="lazy"
-        // allowfullscreen
-        // referrerpolicy="no-referrer-when-downgrade"
-        src={`https://www.google.com/maps/embed/v1/place?key=${API_KEY}
-    &q=Space+Needle,Seattle+WA`}
-      ></iframe>
+      {data && (
+        <MapComponent
+          originLat={data.originLat}
+          originLon={data.originLon}
+          route={data.route}
+          routeName={`Navigate to ${data.destinationAddress}`}
+          destinationLat={data.destinationLat}
+          destinationLon={data.destinationLon}
+        />
+      )}
+      {/* <input
+        className="text-black my-2"
+        ref={setDispatcherCodeRef}
+        placeholder="set dispatcher code"
+        type="text"
+      />
+      <button
+        className="border p-2 flex justify-center my-2 rounded-md"
+        onClick={setDispatcherCode}
+      >
+        {" "}
+        Send Delivery to Dispatcher
+      </button> */}
+      <input
+        className="text-black my-2"
+        ref={setDispatcherCodeRef}
+        placeholder="set dispatcher code"
+        type="text"
+      />
+      <button
+        className="border p-2 flex justify-center my-2 rounded-md"
+        onClick={setDispatcherCode}
+      >
+        {" "}
+        Set Dispatcher Code
+      </button>
 
-      <button onClick={startDelivery} className="border rounded-md">
-        Start delivery
+      <button
+        disabled={!isCodeSet}
+        onClick={startDelivery}
+        className="border p-2 flex w-32 justify-center rounded-md"
+      >
+        {isLoading ? (
+          <div className="h-5 w-5 border-t-2 rounded-full animate-spin border-white"></div>
+        ) : (
+          "Start delivery"
+        )}
       </button>
       <div className="gap-2">
         Update delivery

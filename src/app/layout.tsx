@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "mapbox-gl/dist/mapbox-gl.css";
+
 import Providers from "@/components/providers/Providers";
+import Loading from "./loading";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Loading />
         <Providers>{children}</Providers>
+        <script
+          async
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLEMAP_API_KEY}&libraries=places&callback=initMap`}
+        ></script>
       </body>
     </html>
   );
