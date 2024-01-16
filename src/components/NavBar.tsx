@@ -12,6 +12,7 @@ const NavBar = (props: Props) => {
   const userId = session.data?.user.id;
 
   const { data: user } = trpcClient.getUserById.useQuery(userId);
+  const balance = useCurrency(user?.myBank.balance);
 
   return (
     <div className="w-full border-b sticky top-0 items-center flex p-3 justify-between h-10 shadow-lg ">
@@ -30,7 +31,7 @@ const NavBar = (props: Props) => {
           <Link href="/signup">Become a dispatcher</Link>
         )}
         {user ? (
-          <div> Account ₦{useCurrency(user.myBank.balance)}</div>
+          <div> Account ₦{balance}</div>
         ) : (
           <Link href="/signup">Sign up</Link>
         )}

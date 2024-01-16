@@ -26,9 +26,10 @@ const MapComponent = ({ deliveries, dispatcher }: Prop) => {
   const [mapBox, setMapBox] = useState<mapboxgl.Map | null>(null);
   const [selectedDelivery, setSelectedDelivery] =
     useState<DeliveryOnMap | null>(null);
-  if (!deliveries) return null;
 
   useEffect(() => {
+    if (!deliveries) return;
+
     // let lateralDistance;
     // if (destinationLon && destinationLat) {
     // const pickupLatLon = `${pickupLat},${pickupLon}`;
