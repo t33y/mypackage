@@ -1,41 +1,61 @@
 import z from "zod";
 
 export const deliverySchema = z.object({
+  _id: z.string(),
+  receiverCode: z.number().optional(),
+  startedAt: z.date().optional(),
+  durationToPickup: z.number().optional(),
+  distanceToPickup: z.number().optional(),
+  routeToPickup: z.array(z.array(z.number())).optional(),
+  selected: z.boolean().optional(),
+  trackingId: z.string().optional(),
   destinationLat: z.number().optional(),
   destinationLon: z.number().optional(),
   destinationAddress: z.string().optional(),
-  originLat: z.number().optional(),
-  originLon: z.number().optional(),
-  originAddress: z.string().optional(),
+  pickupLat: z.number().optional(),
+  pickupLon: z.number().optional(),
+  pickupAddress: z.string().optional(),
   duration: z.number().optional(),
   distance: z.number().optional(),
+  dispatcherPhone: z.string().optional(),
   route: z.array(z.array(z.number())).optional(),
-  dispatcherCurrentLocation: z.string(),
+  itemsTotalCost: z.number().optional(),
   isStarted: z.boolean(),
-  itemsToDeliver: z
+  isEnded: z.boolean(),
+  isActivated: z.boolean(),
+  rejected: z.boolean(),
+  completed: z.boolean(),
+  confirmed: z.boolean(),
+  vehicle: z.string().optional(),
+  vehicleLicense: z.string().optional(),
+  deliveryCost: z.string().optional(),
+  items: z
     .array(
       z.object({
         itemName: z.string(),
         itemPrice: z.number().optional(),
-        isPaid: z.boolean().optional(),
-        amountDue: z.number().optional(),
+        itemQuantity: z.number().optional(),
+        itemSubTotal: z.number().optional(),
+        itemId: z.string().optional(),
       })
     )
     .optional(),
 });
 
-export const ItemSchema = z.array(
+export const deliveriesSchema = z.array(deliverySchema);
+
+export const ItemsSchema = z.array(
   z.object({
-    name: z.string(),
-    price: z.number(),
-    isPaid: z.boolean(),
-    amountDue: z.number(),
-    quantity: z.number(),
+    itemName: z.string(),
+    itemPrice: z.number(),
+    itemId: z.string(),
+    itemSubTotal: z.number(),
+    itemQuantity: z.number(),
   })
 );
 
 export type DeliveryType = z.infer<typeof deliverySchema>;
-export type Item = z.infer<typeof ItemSchema>;
+export type Items = z.infer<typeof ItemsSchema>;
 export type StartedDeliveryType = DeliveryType & {
   startTime: number;
   trackingId: string;

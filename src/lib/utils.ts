@@ -119,3 +119,11 @@ export const UseLocalStorage = <T>(intialValue: T | (() => T)) => {
   return [value, setValue] as [T, typeof setValue];
   // }
 };
+
+export const useCurrency = (value: number) => {
+  const currency = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+  return currency;
+};
