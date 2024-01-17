@@ -105,7 +105,7 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
     setIsLoading(true);
     if (!data) return;
     endDelivery({ trackingId: trackingid });
-    router.push(`http://localhost:3000`);
+    router.push(`/`);
     setIsLoading(false);
   };
   useEffect(() => {

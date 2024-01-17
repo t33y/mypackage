@@ -169,7 +169,7 @@ export default function DispatcherTrack({ params: { dispatcherid } }: Props) {
                         )}
                       </button>
                       <Link
-                        href={`http://localhost:3000/dispatcher/${delivery.dispatcherPhone}/${delivery.trackingId}`}
+                        href={`${process.env.NEXT_PUBLIC_SERVER_URL}/dispatcher/${delivery.dispatcherPhone}/${delivery.trackingId}`}
                         className="border p-2 flex justify-center my-2 rounded-md"
                       >
                         Accept delivery

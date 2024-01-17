@@ -213,7 +213,7 @@ export default function Delivery({ params: { id } }: Props) {
         <div className="flex flex-col gap-5">
           <Link
             className="rounded-md border w-[100%] p-3 flex justify-center items-center"
-            href={`http://localhost:3000/track/${data.trackingId}/tracking`}
+            href={`${process.env.NEXT_PUBLIC_SERVER_URL}/track/${data.trackingId}/tracking`}
           >
             Track Delivery
           </Link>

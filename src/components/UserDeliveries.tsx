@@ -37,7 +37,7 @@ const UserDeliveries = ({
           if (!userDelivery) return;
           return (
             <Link
-              href={`http://localhost:3000/delivery/${userDelivery._id}`}
+              href={`${process.env.NEXT_PUBLIC_SERVER_URL}/delivery/${userDelivery._id}`}
               className="border p-3 rounded-md "
               key={userDelivery._id}
             >

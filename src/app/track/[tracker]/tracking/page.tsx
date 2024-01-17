@@ -23,12 +23,12 @@ export default function Track({ params: { tracker } }: Props) {
 
   const { mutate: endDelivery } = trpcClient.endDelivery.useMutation();
 
-  const handleDispatcherClick = () => {
-    if (!data) return;
-    router.push(
-      `http://localhost:3000/track/${tracker}/${data.dispatcherCode}`
-    );
-  };
+  // const handleDispatcherClick = () => {
+  //   if (!data) return;
+  //   router.push(
+  //     `http://localhost:3000/track/${tracker}/${data.dispatcherCode}`
+  //   );
+  // };
   // const handleCancelDeliveryClick = () => {
   //   setIsLoading(true);
   //   if (!data) return;

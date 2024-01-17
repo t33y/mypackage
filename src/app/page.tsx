@@ -74,12 +74,13 @@ export default function Home() {
     createDelivery(data, {
       onSuccess: (e) => {
         setTimeout(() => {
-          router.push(`http://localhost:3000/delivery/${e.insertedId}`);
+          router.push(`/delivery/${e.insertedId}`);
           setIsLoading(false);
         }, 2000);
       },
       onError: (error) => {
         setIsLoading(false);
+        console.log(error);
         alert("Something went wrong");
       },
     });
