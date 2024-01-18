@@ -108,7 +108,7 @@ export default function Track({ params: { tracker } }: Props) {
             ]}
             dispatcher={{
               vehicle: data.vehicle,
-              dispatcherCurrentLocation: data.dispatcherLocation,
+              dispatcherCurrentLocation: data.dispatcherCurrentLocation,
             }}
           />
         )}
