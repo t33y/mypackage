@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { trpcClient } from "../../trpc/client";
 import { SessionProvider } from "next-auth/react";
+import DispatcherLocationProvider from "./DispatcherLocation";
 
 const Providers = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(() => new QueryClient());
@@ -27,7 +28,7 @@ const Providers = ({ children }: PropsWithChildren) => {
     <trpcClient.Provider client={trpcClientAPI} queryClient={queryClient}>
       <SessionProvider>
         <QueryClientProvider client={queryClient}>
-          {children}
+          <DispatcherLocationProvider>{children}</DispatcherLocationProvider>
         </QueryClientProvider>
       </SessionProvider>
     </trpcClient.Provider>

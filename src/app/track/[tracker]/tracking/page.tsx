@@ -1,8 +1,8 @@
 "use client";
 import DispatcherData from "@/components/DispatcherData";
 import MapComponent from "@/components/MapComponent";
+import { useDispatcherLocationContext } from "@/components/providers/DispatcherLocation";
 import { trpcClient } from "@/trpc/client";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -18,7 +18,7 @@ export default function Track({ params: { tracker } }: Props) {
   const [code, setCode] = useState(0);
   const [ETA, setETA] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const { dispatcherLocationState } = useDispatcherLocationContext();
   const { data, refetch } = trpcClient.trackDelivery.useQuery(tracker);
 
   const { mutate: endDelivery } = trpcClient.endDelivery.useMutation();
@@ -108,7 +108,7 @@ export default function Track({ params: { tracker } }: Props) {
             ]}
             dispatcher={{
               vehicle: data.vehicle,
-              dispatcherCurrentLocation: data.dispatcherCurrentLocation,
+              dispatcherCurrentLocation: dispatcherLocationState,
             }}
           />
         )}

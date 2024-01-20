@@ -268,12 +268,14 @@ export const appRouter = router({
     .input(
       z.object({
         phone: z.string(),
+        count: z.number().optional(),
         dispatcherCurrentLocation: z.array(z.number()),
       })
     )
     .mutation(async ({ input }) => {
-      const { phone, dispatcherCurrentLocation } = input;
+      const { phone, dispatcherCurrentLocation, count } = input;
       const lastSeen = Date.now();
+      console.log("the count in server", count);
       let updateIsOnline;
       if (updateIsOnline) {
         clearTimeout(updateIsOnline);
@@ -282,12 +284,17 @@ export const appRouter = router({
         process.env.MONGODB_URI as string
       );
       const db = client.db("mypackage");
-      await db
-        .collection("users")
-        .updateOne(
-          { phone },
-          { $set: { dispatcherCurrentLocation, isOnline: true, lastSeen } }
-        );
+      await db.collection("users").updateOne(
+        { phone },
+        {
+          $set: {
+            dispatcherCurrentLocation,
+            isOnline: true,
+            lastSeen,
+            count,
+          },
+        }
+      );
       await db
         .collection("delivery")
         .updateOne(

@@ -1,6 +1,7 @@
 "use client";
 import LoadingDelivery from "@/components/LoadingDelivery";
 import MapComponent from "@/components/MapComponent";
+import { useDispatcherLocationContext } from "@/components/providers/DispatcherLocation";
 import { trpcClient } from "@/trpc/client";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
@@ -21,6 +22,7 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
   const [isLoadingStart, setIsLoadingStart] = useState(false);
   const [dispatcherLocationInterval, setDispatcherLocationInterval] =
     useState(0);
+  const { setDispatcherLocationState } = useDispatcherLocationContext();
   console.log(trackingid);
 
   const [dispatcherLocation, setDispatcherLocation] = useState<number[]>([]);
@@ -54,18 +56,21 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
       return alert(
         "Geolocation is NOT supported by this browser :( make sure your GPS is turned on"
       );
-
+    let count = 0;
     let updateLocation = window.setInterval(() => {
       navigator.geolocation.getCurrentPosition((pos) => {
+        count++;
         mutate({
           phone: data?.dispatcherPhone,
           dispatcherCurrentLocation: [
             pos.coords.longitude,
             pos.coords.latitude,
           ],
+          count,
         });
-
         setDispatcherLocation([pos.coords.longitude, pos.coords.latitude]);
+        setDispatcherLocationState([pos.coords.longitude, pos.coords.latitude]);
+        console.log("logging location", dispatcherLocation, "the count", count);
       });
     }, 10000);
     setDispatcherLocationInterval(updateLocation);
