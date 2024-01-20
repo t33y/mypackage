@@ -37,5 +37,6 @@ export const useDispatcherLocationContext = () => {
       "Please ensure component is within the DispatcherLocationProvider"
     );
   }
+  console.log(context);
   return context;
 };
