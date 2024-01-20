@@ -57,22 +57,18 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
         "Geolocation is NOT supported by this browser :( make sure your GPS is turned on"
       );
     let count = 0;
-    let updateLocation = window.setInterval(() => {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        count++;
-        mutate({
-          phone: data?.dispatcherPhone,
-          dispatcherCurrentLocation: [
-            pos.coords.longitude,
-            pos.coords.latitude,
-          ],
-          count,
-        });
-        setDispatcherLocation([pos.coords.longitude, pos.coords.latitude]);
-        setDispatcherLocationState([pos.coords.longitude, pos.coords.latitude]);
-        console.log("logging location", dispatcherLocation, "the count", count);
+    let updateLocation = navigator.geolocation.watchPosition((pos) => {
+      count++;
+      mutate({
+        phone: data?.dispatcherPhone,
+        dispatcherCurrentLocation: [pos.coords.longitude, pos.coords.latitude],
+        count,
       });
-    }, 10000);
+      setDispatcherLocation([pos.coords.longitude, pos.coords.latitude]);
+      setDispatcherLocationState([pos.coords.longitude, pos.coords.latitude]);
+      console.log("logging location", dispatcherLocation, "the count", count);
+    });
+
     setDispatcherLocationInterval(updateLocation);
 
     const routeRequestUrl = `https://api.mapbox.com/directions/v5/mapbox/driving/${dispatcherLocation[0]},${dispatcherLocation[1]};${data.pickupLon},${data.pickupLat}?steps=true&geometries=geojson&access_token=${process.env.NEXT_PUBLIC_MAPBOX_API_KEY}`;
@@ -127,7 +123,8 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
       setDispatcherLocation([pos.coords.longitude, pos.coords.latitude]);
     });
 
-    return () => window.clearInterval(dispatcherLocationInterval);
+    return () =>
+      window.navigator.geolocation.clearWatch(dispatcherLocationInterval);
   }, []);
 
   const duration = data?.duration / 3600;
