@@ -18,9 +18,12 @@ export default function Track({ params: { tracker } }: Props) {
   const [code, setCode] = useState(0);
   const [ETA, setETA] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { dispatcherLocationState } = useDispatcherLocationContext();
-  const { data, refetch } = trpcClient.trackDelivery.useQuery(tracker);
 
+  const { data, refetch, dataUpdatedAt } = trpcClient.trackDelivery.useQuery(
+    tracker,
+    { refetchInterval: 1000 }
+  );
+  console.log("time updated", dataUpdatedAt, data?.dispatcherCurrentLocation);
   const { mutate: endDelivery } = trpcClient.endDelivery.useMutation();
 
   // const handleDispatcherClick = () => {
@@ -108,7 +111,7 @@ export default function Track({ params: { tracker } }: Props) {
             ]}
             dispatcher={{
               vehicle: data.vehicle,
-              dispatcherCurrentLocation: dispatcherLocationState,
+              dispatcherCurrentLocation: data.dispatcherCurrentLocation,
             }}
           />
         )}
@@ -215,6 +218,7 @@ export default function Track({ params: { tracker } }: Props) {
                   value={code}
                   onChange={(e) => setCode(Number(e.target.value))}
                   type="text"
+                  placeholder="Enter receiver code"
                 />{" "}
                 <button
                   onClick={handleEndDeliveryClick}
@@ -224,7 +228,7 @@ export default function Track({ params: { tracker } }: Props) {
                   {isLoading ? (
                     <div className=" w-5 h-5 rounded-full border-t-2 border-white animate-spin"></div>
                   ) : (
-                    "End delivery"
+                    "Submit Code"
                   )}
                 </button>
               </div>

@@ -1,8 +1,8 @@
 "use client";
 import LoadingDelivery from "@/components/LoadingDelivery";
 import MapComponent from "@/components/MapComponent";
-import { useDispatcherLocationContext } from "@/components/providers/DispatcherLocation";
 import { trpcClient } from "@/trpc/client";
+import { focusManager } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -22,8 +22,6 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
   const [isLoadingStart, setIsLoadingStart] = useState(false);
   const [dispatcherLocationInterval, setDispatcherLocationInterval] =
     useState(0);
-  const { setDispatcherLocationState } = useDispatcherLocationContext();
-  console.log(trackingid);
 
   const [dispatcherLocation, setDispatcherLocation] = useState<number[]>([]);
 
@@ -33,8 +31,12 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
 
   const { mutate: endDelivery } = trpcClient.endDelivery.useMutation();
   const { mutate: startDelivery } = trpcClient.startDelivery.useMutation();
-  const { mutate } = trpcClient.updateDispatcherLocation.useMutation();
+  const { mutate, isIdle, isError, isPaused } =
+    trpcClient.updateDispatcherLocation.useMutation({
+      networkMode: "always",
+    });
 
+  console.log("is Error", isError, "is Idle", isIdle, "is paused", isPaused);
   const arrival = data?.arrivalTime * 1000;
 
   const start = new Intl.DateTimeFormat("en-GB", {
@@ -56,18 +58,34 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
       return alert(
         "Geolocation is NOT supported by this browser :( make sure your GPS is turned on"
       );
+    focusManager.setFocused(true);
     let count = 0;
-    let updateLocation = navigator.geolocation.watchPosition((pos) => {
-      count++;
-      mutate({
-        phone: data?.dispatcherPhone,
-        dispatcherCurrentLocation: [pos.coords.longitude, pos.coords.latitude],
-        count,
-      });
-      setDispatcherLocation([pos.coords.longitude, pos.coords.latitude]);
-      setDispatcherLocationState([pos.coords.longitude, pos.coords.latitude]);
-      console.log("logging location", dispatcherLocation, "the count", count);
-    });
+    let updateLocation = navigator.geolocation.watchPosition(
+      (pos) => {
+        count++;
+        mutate({
+          phone: data?.dispatcherPhone,
+          dispatcherCurrentLocation: [
+            pos.coords.longitude,
+            pos.coords.latitude,
+          ],
+          count,
+        });
+        const body = JSON.stringify({
+          phone: data?.dispatcherPhone,
+          dispatcherCurrentLocation: [
+            pos.coords.longitude,
+            pos.coords.latitude,
+          ],
+          count,
+        });
+        // fetch("/api/trpc/updatedispaatcherlocation", {body, method:"POST"})
+        setDispatcherLocation([pos.coords.longitude, pos.coords.latitude]);
+
+        console.log("logging location", dispatcherLocation, "the count", count);
+      },
+      (error) => console.log("watch posotion error", error)
+    );
 
     setDispatcherLocationInterval(updateLocation);
 
@@ -123,8 +141,10 @@ export default function DispatcherTrack({ params: { trackingid } }: Props) {
       setDispatcherLocation([pos.coords.longitude, pos.coords.latitude]);
     });
 
-    return () =>
+    return () => {
       window.navigator.geolocation.clearWatch(dispatcherLocationInterval);
+      focusManager.setFocused(undefined);
+    };
   }, []);
 
   const duration = data?.duration / 3600;

@@ -24,6 +24,8 @@ type Prop = {
 
 const MapComponent = ({ deliveries, dispatcher }: Prop) => {
   const [mapBox, setMapBox] = useState<mapboxgl.Map | null>(null);
+  const [dispatcherPositionMarker, setDispatcherPositionMarker] =
+    useState<mapboxgl.Marker | null>(null);
   const [selectedDelivery, setSelectedDelivery] =
     useState<DeliveryOnMap | null>(null);
 
@@ -108,7 +110,6 @@ const MapComponent = ({ deliveries, dispatcher }: Prop) => {
           console.log("is it selected?", delivery.id, delivery.selected);
           let pathColor = delivery.selected ? "#54d062" : "#888";
           let pathOrder = delivery.selected ? 102 : 1;
-          console.log("path color", pathColor);
           map.addSource(delivery.routeName, {
             type: "geojson",
             data: {
@@ -208,22 +209,28 @@ const MapComponent = ({ deliveries, dispatcher }: Prop) => {
     console.log("dispatcher location", dispatcher.dispatcherCurrentLocation);
     // mapBox.on("load", () => {
     if (dispatcher.dispatcherCurrentLocation?.length) {
+      if (dispatcherPositionMarker) {
+        dispatcherPositionMarker?.setLngLat([
+          dispatcher.dispatcherCurrentLocation[0],
+          dispatcher.dispatcherCurrentLocation[1],
+        ]);
+        return;
+      }
       const dispatcherIcon = document.createElement("img");
       dispatcherIcon.src = `/${dispatcher.vehicle}.png`;
       dispatcherIcon.width = 24;
       dispatcherIcon.height = 24;
       dispatcherIcon.className =
         "after:absolute after:whitespace-nowrap after:bg-gray-500/70 after:text-white after:content-['Dispatcher'] after:px-[4px] after:py-1 after:rounded-[3px] after:-left-[100%]  ";
-      new mapboxgl.Marker({
+      const dispatcherMarker = new mapboxgl.Marker({
         element: dispatcherIcon,
-        // className:
-        //   "after:absolute after:whitespace-nowrap after:bg-gray-500/70 after:text-white after:content-['Dispatcher'] after:px-[4px] after:py-1 after:rounded-[3px] after:-left-[100%]  ",
       } as mapboxgl.MarkerOptions)
         .setLngLat([
           dispatcher.dispatcherCurrentLocation[0],
           dispatcher.dispatcherCurrentLocation[1],
         ])
         .addTo(mapBox);
+      setDispatcherPositionMarker(dispatcherMarker);
       // }
       //   const dispatcherSource = mapBox.getSource(
       //     "dispatcher"
